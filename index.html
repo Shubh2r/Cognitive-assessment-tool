@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aptitude Test - Cognitive Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .test-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1em;
+            display: none;
+        }
+
+        .timer.warning {
+            background: rgba(255,0,0,0.8);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-description {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .start-description h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .start-description ul {
+            text-align: left;
+            color: #666;
+            line-height: 1.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .start-description li {
+            margin-bottom: 8px;
+        }
+
+        .question-container {
+            display: none;
+        }
+
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-text {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 35px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .question-category {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            font-weight: 500;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 18px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            transition: left 0.5s;
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.2);
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.3);
+        }
+
+        .option-label {
+            font-weight: 600;
+            margin-right: 20px;
+            min-width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+        }
+
+        .option.selected .option-label {
+            background: white;
+            color: #667eea;
+        }
+
+        .option-text {
+            flex: 1;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102,126,234,0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+        }
+
+        .results-header {
+            margin-bottom: 40px;
+        }
+
+        .results-header h2 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .results-subtitle {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .score-overview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .main-score {
+            font-size: 4em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .score-label {
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .score-description {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+
+        .detailed-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .category-score {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+        }
+
+        .category-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .category-percentage {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .category-fraction {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .performance-analysis {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .performance-analysis h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .strength-weakness {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .strength-list, .weakness-list {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+        }
+
+        .weakness-list {
+            border-left-color: #dc3545;
+        }
+
+        .strength-list h4, .weakness-list h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .strength-list ul, .weakness-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .strength-list li, .weakness-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .strength-list li:last-child, .weakness-list li:last-child {
+            border-bottom: none;
+        }
+
+        .recommendations {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: left;
+        }
+
+        .recommendations h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .recommendation-item {
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .recommendation-item:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .test-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .question-card {
+                padding: 25px;
+            }
+            
+            .strength-weakness {
+                grid-template-columns: 1fr;
+            }
+            
+            .timer {
+                position: static;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Aptitude Test</h1>
+            <p>Comprehensive Cognitive Assessment</p>
+            <div class="test-info">
+                <div class="info-item">📊 20 Questions</div>
+                <div class="info-item">⏰ 20 Minutes</div>
+                <div class="info-item">🎯 4 Categories</div>
+            </div>
+            <div class="timer" id="timer">
+                ⏰ Time: <span id="time-display">20:00</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="start-screen" class="start-screen">
+                <div class="start-description">
+                    <h3>📋 Test Instructions</h3>
+                    <ul>
+                        <li><strong>Duration:</strong> 20 minutes for 20 questions</li>
+                        <li><strong>Categories:</strong> Numerical, Logical, Verbal, and Spatial reasoning</li>
+                        <li><strong>Format:</strong> Multiple choice questions with 4 options each</li>
+                        <li><strong>Scoring:</strong> Each correct answer = 5 points (Total: 100 points)</li>
+                        <li><strong>Navigation:</strong> You can go back and change answers before submitting</li>
+                        <li><strong>Timer:</strong> Test will auto-submit when time expires</li>
+                    </ul>
+                </div>
+                <button class="btn" onclick="startTest()">🚀 Start Test</button>
+            </div>
+
+            <!-- Question Container -->
+            <div id="question-container" class="question-container">
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span class="progress-text" id="progress-text">Question 1 of 20</span>
+                        <span class="progress-text" id="answered-count">0 answered</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="question-meta">
+                        <div class="question-number" id="question-number">Question 1</div>
+                        <div class="question-category" id="question-category">Numerical</div>
+                    </div>
+                    <div class="question-text" id="question-text"></div>
+                    <div class="options" id="options"></div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" id="prev-btn" onclick="previousQuestion()" disabled>← Previous</button>
+                    <button class="btn" id="next-btn" onclick="nextQuestion()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results">
+                <div class="results-header">
+                    <h2>🎉 Test Results</h2>
+                    <p class="results-subtitle">Your cognitive assessment is complete</p>
+                </div>
+
+                <div class="score-overview" id="score-overview">
+                    <!-- Main score will be populated here -->
+                </div>
+
+                <div class="detailed-scores" id="detailed-scores">
+                    <!-- Category scores will be populated here -->
+                </div>
+
+                <div class="performance-analysis">
+                    <h3>📈 Performance Analysis</h3>
+                    <div class="strength-weakness" id="strength-weakness">
+                        <!-- Strengths and weaknesses will be populated here -->
+                    </div>
+                </div>
+
+                <div class="recommendations" id="recommendations">
+                    <h3>💡 Recommendations</h3>
+                    <div id="recommendations-content">
+                        <!-- Recommendations will be populated here -->
+                    </div>
+                </div>
+
+                <div class="navigation" style="justify-content: center; margin-top: 30px;">
+                    <button class="btn" onclick="resetTest()">🔄 Take Test Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let timeRemaining = 1200; // 20 minutes in seconds
+        let timerInterval;
+        let testStartTime;
+
+        const questions = [
+            {
+                question: "If 5 machines can produce 5 widgets in 5 minutes, how many machines are needed to produce 100 widgets in 100 minutes?",
+                options: ["5 machines", "10 machines", "20 machines", "100 machines"],
+                correct: 0,
+                category: "Numerical",
+                explanation: "Each machine produces 1 widget in 5 minutes, so each machine can produce 20 widgets in 100 minutes. To produce 100 widgets, you need 5 machines."
+            },
+            {
+                question: "Find the next number in the sequence: 2, 6, 12, 20, 30, ?",
+                options: ["40", "42", "45", "48"],
+                correct: 1,
+                category: "Logical",
+                explanation: "The differences are 4, 6, 8, 10... (increasing by 2 each time). Next difference is 12, so 30 + 12 = 42."
+            },
+            {
+                question: "If all Bloops are Razzles and all Razzles are Lazzles, then all Bloops are definitely:",
+                options: ["Lazzles", "Not Lazzles", "Sometimes Lazzles", "Cannot be determined"],
+                correct: 0,
+                category: "Logical",
+                explanation: "This is a syllogism. If A→B and B→C, then A→C. All Bloops are Lazzles."
+            },
+            {
+                question: "A cube has how many edges?",
+                options: ["6", "8", "10", "12"],
+                correct: 3,
+                category: "Spatial",
+                explanation: "A cube has 12 edges: 4 on top face, 4 on bottom face, and 4 connecting them vertically."
+            },
+            {
+                question: "Which word does NOT belong with the others?",
+                options: ["Dog", "Cat", "Bird", "Fish"],
+                correct: 2,
+                category: "Verbal",
+                explanation: "Bird is the only one that can fly naturally. All others are primarily land/water animals."
+            },
+            {
+                question: "If today is Monday, what day will it be 100 days from now?",
+                options: ["Monday", "Tuesday", "Wednesday", "Thursday"],
+                correct: 2,
+                category: "Numerical",
+                explanation: "100 ÷ 7 = 14 remainder 2. So 100 days = 14 weeks + 2 days. Monday + 2 days = Wednesday."
+            },
+            {
+                question: "Complete the analogy: Book is to Reading as Fork is to:",
+                options: ["Kitchen", "Eating", "Metal", "Spoon"],
+                correct: 1,
+                category: "Verbal",
+                explanation: "A book is used for reading, just as a fork is used for eating."
+            },
+            {
+                question: "What comes next in the pattern? ○ ◐ ● ◑ ?",
+                options: ["○", "◐", "●", "◑"],
+                correct: 0,
+                category: "Logical",
+                explanation: "The pattern shows moon phases: new, waxing, full, waning, then back to new (○)."
+            },
+            {
+                question: "If 3x + 7 = 22, what is the value of x?",
+                options: ["3", "5", "7", "9"],
+                correct: 1,
+                category: "Numerical",
+                explanation: "3x + 7 = 22, so 3x = 15, therefore x = 5."
+            },
+            {
+                question: "Which shape would complete the pattern? □ ○ △ □ ○ ?",
+                options: ["□", "○", "△", "◇"],
+                correct: 2,
+                category: "Spatial",
+                explanation: "The pattern repeats every 3 shapes: square, circle, triangle. The next shape is triangle."
+            },
+            {
+                question: "LIVED is to DEVIL as 6323 is to:",
+                options: ["3236", "2336", "3263", "3326"],
+                correct: 0,
+                category: "Logical",
+                explanation: "LIVED spelled backwards is DEVIL. 6323 backwards is 3236... wait, that's option A. Let me check: 6323 reversed is 3236."
+            },
+            {
+                question: "A train travels 60 miles in 1.5 hours. What is its average speed in mph?",
+                options: ["30 mph", "40 mph", "45 mph", "50 mph"],
+                correct: 1,
+                category: "Numerical",
+                explanation: "Speed = Distance ÷ Time = 60 ÷ 1.5 = 40 mph."
+            },
+            {
+                question: "Which word is most similar in meaning to 'Elated'?",
+                options: ["Sad", "Angry", "Joyful", "Tired"],
+                correct: 2,
+                category: "Verbal",
+                explanation: "Elated means extremely happy or joyful."
+            },
+            {
+                question: "If you rearrange the letters of 'LISTEN', you can form:",
+                options: ["SILENT", "ENLIST", "TINSEL", "All of the above"],
+                correct: 3,
+                category: "Verbal",
+                explanation: "All three words use the same letters as LISTEN: SILENT, ENLIST, and TINSEL."
+            },
+            {
+                question: "In a group of 20 people, 12 like coffee, 8 like tea, and 3 like both. How many like neither?",
+                options: ["2", "3", "5", "7"],
+                correct: 1,
+                category: "Logical",
+                explanation: "Using Venn diagram: People who like only coffee = 12-3 = 9. Only tea = 8-3 = 5. Both = 3. Total who like at least one = 9+5+3 = 17. Neither = 20-17 = 3."
+            },
+            {
+                question: "What is 15% of 240?",
+                options: ["32", "36", "40", "45"],
+                correct: 1,
+                category: "Numerical",
+                explanation: "15% of 240 = 0.15 × 240 = 36."
+            },
+            {
+                question: "If a clock shows 3:15, what is the angle between the hour and minute hands?",
+                options: ["0°", "7.5°", "15°", "22.5°"],
+                correct: 1,
+                category: "Spatial",
+                explanation: "At 3:15, minute hand is at 3 (90°), hour hand moves 0.5° per minute, so it's at 90° + (15 × 0.5°) = 97.5°. Difference = 7.5°."
+            },
+            {
+                question: "Which number doesn't fit the pattern: 2, 3, 5, 7, 11, 12, 13?",
+                options: ["2", "11", "12", "13"],
+                correct: 2,
+                category: "Logical",
+                explanation: "All numbers except 12 are prime numbers. 12 = 2² × 3, so it's not prime."
+            },
+            {
+                question: "The opposite of 'GENEROUS' is:",
+                options: ["Stingy", "Kind", "Wealthy", "Happy"],
+                correct: 0,
+                category: "Verbal",
+                explanation: "Generous means giving freely; stingy means unwilling to spend or give."
+            },
+            {
+                question: "If a rectangle has length 12 and width 8, what is its perimeter?",
+                options: ["20", "32", "40", "96"],
+                correct: 2,
+                category: "Spatial",
+                explanation: "Perimeter = 2(length + width) = 2(12 + 8) = 2(20) = 40."
+            }
+        ];
+
+        function startTest() {
+            testStartTime = Date.now();
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('question-container').style.display = 'block';
+            document.getElementById('timer').style.display = 'block';
+            
+            startTimer();
+            showQuestion();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                document.getElementById('time-display').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Warning when 5 minutes left
+                if (timeRemaining <= 300) {
+                    document.getElementById('timer').classList.add('warning');
+                }
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    finishTest();
+                }
+            }, 1000);
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestionIndex];
+            
+            document.getElementById('question-number').textContent = `Question ${currentQuestionIndex + 1}`;
+            document.getElementById('question-category').textContent = question.category;
+            document.getElementById('question-text').textContent = question.question;
+            document.getElementById('progress-text').textContent = 
+                `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            
+            // Count answered questions
+            const answeredCount = answers.filter(answer => answer !== undefined).length;
+            document.getElementById('answered-count').textContent = `${answeredCount} answered`;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.onclick = () => selectOption(index);
+                
+                if (answers[currentQuestionIndex] === index) {
+                    optionDiv.classList.add('selected');
+                }
+                
+                optionDiv.innerHTML = `
+                    <div class="option-label">${String.fromCharCode(65 + index)}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            updateProgress();
+            updateNavigation();
+        }
+
+        function selectOption(optionIndex) {
+            answers[currentQuestionIndex] = optionIndex;
+            
+            document.querySelectorAll('.option').forEach((option, index) => {
+                option.classList.toggle('selected', index === optionIndex);
+            });
+            
+            // Update answered count
+            const answeredCount = answers.filter(answer => answer !== undefined).length;
+            document.getElementById('answered-count').textContent = `${answeredCount} answered`;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                finishTest();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        function updateNavigation() {
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            
+            const nextBtn = document.getElementById('next-btn');
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.textContent = '🏁 Finish Test';
+            } else {
+                nextBtn.textContent = 'Next →';
+            }
+        }
+
+        function finishTest() {
+            clearInterval(timerInterval);
+            const testEndTime = Date.now();
+            const timeTaken = Math.round((testEndTime - testStartTime) / 1000);
+            
+            document.getElementById('question-container').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('timer').style.display = 'none';
+            
+            showResults(timeTaken);
+        }
+
+        function showResults(timeTaken) {
+            // Calculate scores
+            let totalScore = 0;
+            const categoryScores = {
+                'Numerical': { correct: 0, total: 0 },
+                'Logical': { correct: 0, total: 0 },
+                'Verbal': { correct: 0, total: 0 },
+                'Spatial': { correct: 0, total: 0 }
+            };
+
+            // Calculate total and category scores
+            questions.forEach((question, index) => {
+                const category = question.category;
+                categoryScores[category].total++;
+                
+                if (answers[index] === question.correct) {
+                    totalScore += 5;
+                    categoryScores[category].correct++;
+                }
+            });
+
+            const totalPercentage = (totalScore / 100) * 100;
+            
+            // Format time taken
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = timeTaken % 60;
+            const timeFormatted = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Generate performance level
+            let performanceLevel, performanceDescription, performanceColor;
+            if (totalPercentage >= 90) {
+                performanceLevel = "Exceptional";
+                performanceDescription = "Outstanding cognitive performance across all areas";
+                performanceColor = "#28a745";
+            } else if (totalPercentage >= 80) {
+                performanceLevel = "Excellent";
+                performanceDescription = "Strong cognitive abilities with room for minor improvements";
+                performanceColor = "#17a2b8";
+            } else if (totalPercentage >= 70) {
+                performanceLevel = "Good";
+                performanceDescription = "Solid cognitive performance with some areas for development";
+                performanceColor = "#ffc107";
+            } else if (totalPercentage >= 60) {
+                performanceLevel = "Average";
+                performanceDescription = "Adequate performance with several areas needing improvement";
+                performanceColor = "#fd7e14";
+            } else {
+                performanceLevel = "Below Average";
+                performanceDescription = "Significant room for improvement across multiple areas";
+                performanceColor = "#dc3545";
+            }
+
+            // Display main score
+            document.getElementById('score-overview').innerHTML = `
+                <div class="main-score">${totalScore}/100</div>
+                <div class="score-label">${performanceLevel} Performance</div>
+                <div class="score-description">${performanceDescription}</div>
+                <div style="margin-top: 20px; font-size: 1em; opacity: 0.8;">
+                    📊 ${totalPercentage}% • ⏱️ Time: ${timeFormatted}
+                </div>
+            `;
+
+            // Display category scores
+            const detailedScoresContainer = document.getElementById('detailed-scores');
+            detailedScoresContainer.innerHTML = '';
+            
+            Object.entries(categoryScores).forEach(([category, scores]) => {
+                const percentage = Math.round((scores.correct / scores.total) * 100);
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category-score';
+                categoryDiv.innerHTML = `
+                    <div class="category-name">${getEmoji(category)} ${category} Reasoning</div>
+                    <div class="category-percentage">${percentage}%</div>
+                    <div class="category-fraction">${scores.correct}/${scores.total} correct</div>
+                `;
+                detailedScoresContainer.appendChild(categoryDiv);
+            });
+
+            // Generate strengths and weaknesses
+            const categoryPercentages = Object.entries(categoryScores).map(([category, scores]) => ({
+                category,
+                percentage: Math.round((scores.correct / scores.total) * 100)
+            }));
+
+            categoryPercentages.sort((a, b) => b.percentage - a.percentage);
+
+            const strengths = categoryPercentages.filter(cat => cat.percentage >= 70);
+            const weaknesses = categoryPercentages.filter(cat => cat.percentage < 70);
+
+            // Display strengths and weaknesses
+            document.getElementById('strength-weakness').innerHTML = `
+                <div class="strength-list">
+                    <h4>💪 Strengths</h4>
+                    <ul>
+                        ${strengths.length > 0 ? 
+                            strengths.map(s => `<li>${getEmoji(s.category)} ${s.category} Reasoning (${s.percentage}%)</li>`).join('') :
+                            '<li>Focus on developing foundational skills across all areas</li>'
+                        }
+                    </ul>
+                </div>
+                <div class="weakness-list">
+                    <h4>🎯 Areas for Improvement</h4>
+                    <ul>
+                        ${weaknesses.length > 0 ? 
+                            weaknesses.map(w => `<li>${getEmoji(w.category)} ${w.category} Reasoning (${w.percentage}%)</li>`).join('') :
+                            '<li>Great job! Continue practicing to maintain your performance</li>'
+                        }
+                    </ul>
+                </div>
+            `;
+
+            // Generate recommendations
+            const recommendations = generateRecommendations(categoryScores, totalPercentage);
+            const recommendationsContainer = document.getElementById('recommendations-content');
+            recommendationsContainer.innerHTML = '';
+            
+            recommendations.forEach(rec => {
+                const recDiv = document.createElement('div');
+                recDiv.className = 'recommendation-item';
+                recDiv.innerHTML = `<strong>${rec.title}</strong><br>${rec.description}`;
+                recommendationsContainer.appendChild(recDiv);
+            });
+        }
+
+        function getEmoji(category) {
+            const emojis = {
+                'Numerical': '🔢',
+                'Logical': '🧩',
+                'Verbal': '📝',
+                'Spatial': '📐'
+            };
+            return emojis[category] || '📋';
+        }
+
+        function generateRecommendations(categoryScores, totalPercentage) {
+            const recommendations = [];
+            
+            // General recommendations based on overall performance
+            if (totalPercentage >= 85) {
+                recommendations.push({
+                    title: "🌟 Maintain Excellence",
+                    description: "Your cognitive abilities are strong across the board. Consider taking on challenging projects that utilize your analytical skills and continue practicing to maintain your edge."
+                });
+            } else if (totalPercentage >= 70) {
+                recommendations.push({
+                    title: "📈 Build on Your Foundation",
+                    description: "You have solid cognitive abilities. Focus on your weaker areas while maintaining your strengths. Regular practice with logic puzzles and brain teasers will help improve overall performance."
+                });
+            } else {
+                recommendations.push({
+                    title: "🎯 Systematic Improvement",
+                    description: "Focus on building fundamental skills through structured practice. Start with basic concepts in each area and gradually increase complexity as you improve."
+                });
+            }
+
+            // Category-specific recommendations
+            Object.entries(categoryScores).forEach(([category, scores]) => {
+                const percentage = (scores.correct / scores.total) * 100;
+                
+                if (percentage < 60) {
+                    switch(category) {
+                        case 'Numerical':
+                            recommendations.push({
+                                title: "🔢 Strengthen Mathematical Skills",
+                                description: "Practice basic arithmetic, percentages, ratios, and word problems. Use apps like Khan Academy or practice mental math daily to improve numerical reasoning."
+                            });
+                            break;
+                        case 'Logical':
+                            recommendations.push({
+                                title: "🧩 Develop Logical Thinking",
+                                description: "Work on pattern recognition, sequence problems, and logical puzzles. Try apps like Lumosity or solve daily logic puzzles to enhance reasoning skills."
+                            });
+                            break;
+                        case 'Verbal':
+                            recommendations.push({
+                                title: "📝 Enhance Verbal Abilities",
+                                description: "Expand vocabulary through reading, practice analogies, and work on word relationships. Consider vocabulary building apps and read diverse materials regularly."
+                            });
+                            break;
+                        case 'Spatial':
+                            recommendations.push({
+                                title: "📐 Improve Spatial Reasoning",
+                                description: "Practice with 3D puzzles, geometric problems, and visualization exercises. Try apps focused on spatial skills or work with physical puzzles and building blocks."
+                            });
+                            break;
+                    }
+                }
+            });
+
+            // Time management recommendation
+            const timeUsed = 1200 - timeRemaining;
+            if (timeUsed < 600) { // Finished very quickly
+                recommendations.push({
+                    title: "⏰ Utilize Full Time",
+                    description: "You completed the test quickly. Consider using more time to double-check answers and think through problems more thoroughly for better accuracy."
+                });
+            } else if (timeRemaining < 60) { // Almost ran out of time
+                recommendations.push({
+                    title: "⚡ Improve Time Management",
+                    description: "Practice solving problems under time pressure. Work on identifying question types quickly and having strategies for each type to improve your pace."
+                });
+            }
+
+            return recommendations;
+        }
+
+        function resetTest() {
+            // Reset all variables
+            currentQuestionIndex = 0;
+            answers = [];
+            timeRemaining = 1200;
+            clearInterval(timerInterval);
+            
+            // Reset UI
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('start-screen').style.display = 'block';
+            document.getElementById('question-container').style.display = 'none';
+            document.getElementById('timer').style.display = 'none';
+            document.getElementById('timer').classList.remove('warning');
+            document.getElementById('time-display').textContent = '20:00';
+            
+            // Reset progress bar
+            document.getElementById('progress-fill').style.width = '0%';
+        }
+    </script>
+</body>
+</html>
